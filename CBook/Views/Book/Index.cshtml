@@ -1,0 +1,118 @@
+
+@{
+  ViewBag.Title = "Index";
+}
+
+
+<h2>Books</h2>
+<a class="btn btn-primary" onclick="PopupForm('@Url.Action("AddOrEdit","Book")')">Add New Book</a>
+<table id="booksTable" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Author</th>
+      <th>About</th>
+      <th>Fee</th>
+      <th>Availability</th>
+      <th></th>
+    </tr>
+  </thead>
+</table>
+
+<link href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+
+
+
+@section scripts{
+  <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>
+  <script>
+    var Popup, dataTable;
+    $(document).ready(function () {
+      dataTable = $("#booksTable").DataTable({
+        "ajax": {
+          "url": "/Book/GetData",
+          "type": "GET",
+          "datatype": "json"
+        },
+        "columns": [
+          { "data": "BName" },
+          { "data": "BAuthor" },
+          { "data": "BDetail" },
+          { "data": "BFee" },
+          { "data": "BAvailability" },
+          {
+            "data": "BookID", "render": function (data) {
+              return "<a class='btn btn-info' onclick=PopupForm('@Url.Action("AddOrEdit","Book")/"+ data +"')><i class='glyphicon glyphicon-pencil'></i>Edit</a><a class='btn btn-danger' style='margin-left:5px' onclick = Delete("+data+")><i class='glyphicon glyphicon-trash'></i>Delete</a>"
+            },
+            "orderable": false,
+            "searchable":false,
+            "width":"150px"
+          }
+        ]
+      });
+    });
+    function PopupForm(url) {
+      //alert(url);
+      var formDiv = $('<div/>');
+      $.get(url)
+        .done(function (response) {
+          formDiv.html(response);
+          Popup = formDiv.dialog({
+            autoOpen: true,
+            modal: true,
+            resizable: false,
+            title: 'Fill Book Details',
+            height: 500,
+            width: 700,
+            close: function () {
+              Popup.dialog('destroy').remove();
+
+            }
+          });
+        });
+    }
+    function submitform(form) {
+      $.validator.unobtrusive.parse(form);
+      if ($(form).valid()) {
+        $.ajax({
+          type: "POST",
+          url: form.action,
+          data: $(form).serialize(),
+          success: function (data) {
+            if (data.success) {
+              Popup.dialog('close');
+              dataTable.ajax.reload();
+              $.notify(data.message, {
+                globalPosition: "top center",
+                className:"Success"
+              })
+            }
+          }
+        });
+      }
+      return false;
+    }
+
+    function Delete(id) {
+      if (confirm('Are you sure to delete this book'))
+      {
+        $.ajax({
+          type: "POST",
+          url: '@Url.Action("Delete","Book")/' + id,
+          success: function (data) {
+            if (data.success) {
+              dataTable.ajax.reload();
+              $.notify(data.message, {
+                globalPosition: "top center",
+                className:"Success"
+              })
+            }
+          }
+        });
+      }
+    }
+  </script>
+}
+

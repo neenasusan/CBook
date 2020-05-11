@@ -1,0 +1,54 @@
+@model CBook.Models.Book
+@{
+  Layout = null;
+}
+
+
+
+
+@using (Html.BeginForm("AddOrEdit", "Book", FormMethod.Post, new { onsubmit = "return submitform(this)" }))
+{
+
+  @Html.HiddenFor(model => model.BookID)
+
+  <div class="form-group">
+    @Html.LabelFor(model => model.BName, new { @class = "Control-label" })
+    @Html.EditorFor(model => model.BName, new { htmlAttributes = new { @class = "form.control" } })
+    @Html.ValidationMessageFor(model => model.BName, "", new { @class = "text-danger" })
+    @Html.ValidationMessage("BExist", new { @class = "text-danger" })
+
+    
+  </div>
+  <div class="form-group">
+    @Html.LabelFor(model => model.BAuthor, new { @class = "Control-label" })
+    @Html.EditorFor(model => model.BAuthor, new { htmlAttributes = new { @class = "form.control" } })
+    @Html.ValidationMessageFor(model => model.BAuthor)
+  </div>
+  <div class="form-group">
+    @Html.LabelFor(model => model.BDetail, new { @class = "Control-label" })
+    @Html.EditorFor(model => model.BDetail, new { htmlAttributes = new { @class = "form.control" } })
+
+  </div>
+  <div class="form-group">
+    @Html.LabelFor(model => model.BFee, new { @class = "Control-label" })
+    @Html.EditorFor(model => model.BFee, new { htmlAttributes = new { @class = "form.control" } })
+
+  </div>
+  <div class="form-group">
+    @Html.LabelFor(model => model.BAvailability, new { @class = "Control-label" })
+    @Html.EditorFor(model => model.BAvailability, new { htmlAttributes = new { @class = "form.control" } })
+    @Html.ValidationMessageFor(model => model.BAvailability)
+  </div>
+  <div class="form-group">
+    <input type="submit" value="Submit" class="btn btn-primary" />
+    <input type="reset" value="Reset" class="btn btn-danger" />
+  </div>
+
+
+
+}
+
+@section Scripts {
+  @Scripts.Render("~/bundles/jqueryval")
+}
+
